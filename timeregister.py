@@ -18,6 +18,12 @@ def get_current_time():
     # Get current date and time
     return strftime("%Y-%m-%d %H:%M:%S")
 
+def is_last_clock_in(data):
+    return data.iloc[-1]['Type'] == 'In'
+
+def is_last_clock_out(data):
+    return data.iloc[-1]['Type'] == 'Out'
+
 def add_timestamp_entry(entry_type):
     def decorator(func):
         def wrapper(df, timestamp):

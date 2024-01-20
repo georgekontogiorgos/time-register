@@ -5,31 +5,37 @@ from time import strftime
 
 def timestamp_decorator(func):
     def wrapper():
-        timestamp = tr.get_current_time()
-
-        confirmation = messagebox.askquestion("Confirmation", 
-                                                "Are you sure you want to register?\n" +
-                                                timestamp)
-        
-        if confirmation == 'no':
-            return
-        
         file_path = 'data.csv'
         data = tr.get_data_from_file(file_path)
-        data, result_text = func(data, timestamp)
-        label.config(text=result_text)
-        tr.write_data_to_file(data, file_path)
+        try:
+            timestamp = tr.get_current_time()
+            data, result_text = func(data, timestamp)
+            confirmation = messagebox.askquestion("Confirmation", 
+                                        "Are you sure you want to register?\n" +
+                                        timestamp)
+            if confirmation == 'no':
+                return
+            label.config(text=result_text)
+            tr.write_data_to_file(data, file_path)
+        except:
+            messagebox.showerror("Error", "Register two entries of same type in a row not possible")
     return wrapper
 
 @timestamp_decorator
 def clock_in_cmd(data, timestamp):
-    data = tr.set_in_timestamp(data, timestamp)
-    return data, "Clock in registered at\n" + timestamp
+    if tr.is_last_clock_out(data):
+        data = tr.set_in_timestamp(data, timestamp)
+        return data, "Clock in registered at\n" + timestamp
+    else:
+        raise
 
 @timestamp_decorator
 def clock_out_cmd(data, timestamp):
-    data = tr.set_out_timestamp(data, timestamp)
-    return data, "Clock out registered at\n" + timestamp
+    if tr.is_last_clock_in(data):
+        data = tr.set_out_timestamp(data, timestamp)
+        return data, "Clock out registered at\n" + timestamp
+    else:
+        raise
 
 def clock():
     current_time = "Welcome to time register program!\n" + strftime('%Y-%m-%d %H:%M:%S')
