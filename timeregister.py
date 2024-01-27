@@ -8,8 +8,9 @@ timestamp_format = "%Y-%m-%d %H:%M:%S"
 
 class TimeRegister:
     def __init__(self):
-        self.file_path = ''
-        self.load_config('./config')
+        self.file_path = './data.csv'
+        self.country = 'SE'
+        self.load_config('/home/george/git/TimeRegister/config')
 
     def load_config(self, config_file_path):
         # Create a ConfigParser object
@@ -23,7 +24,12 @@ class TimeRegister:
             if 'data_file_path' in config['Settings']:
                 self.file_path = config['Settings']['data_file_path']
             else:
-                print("Missing file path in the config file.")
+                print("Missing data file path in the config file.")
+            if 'country' in config['Settings']:
+                self.country = config['Settings']['country']
+            else:
+                print("Missing country in the config file.")
+
         else:
             print("No 'Settings' section found in the config file.")
 
@@ -60,7 +66,7 @@ class TimeRegister:
 
     def add_timestamp_entry(entry_type):
         def decorator(func):
-            def wrapper(df, date, time):
+            def wrapper(self, df, date, time):
                 # Create a new row to append
                 new_data = {'Date': date, 'Time': time, 'Type': entry_type}
 
@@ -69,7 +75,6 @@ class TimeRegister:
 
                 # Append the new row to the DataFrame
                 return pd.concat([df, new_row_df], ignore_index=True)
-            
             return wrapper
         return decorator
 
@@ -122,7 +127,7 @@ class TimeRegister:
         return date_object.weekday() in [5, 6]
     
     def _is_holiday(self, date):
-        return True if holidays.country_holidays('SE').get(date) else False
+        return True if holidays.country_holidays(self.country).get(date) else False
 
     def get_balance_per_day(self, worked_hours):
 
@@ -136,7 +141,6 @@ class TimeRegister:
                 # Total balance
                 balance_per_day += worked_hours[day] - 8
             balance[day] = balance_per_day
-        print(balance)
 
         return balance            
 

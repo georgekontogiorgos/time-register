@@ -48,30 +48,44 @@ def balance_cmd():
 
     balance = tr.get_balance_per_day(worked_hours)
 
-    categories = list(worked_hours.keys())
-    values = list(worked_hours.values())
+    dates = list(worked_hours.keys())
+    worked_hours_per_day = list(worked_hours.values())
+    balance_per_day = list(balance.values())
 
-    plt.figure("Balance", facecolor='black')
-    
-    ax = plt.axes()
-    ax.set_facecolor("black")
-    ax.bar(categories, values, color="green")
+    fig, (ax1, ax2) = plt.subplots(2, sharex=True, facecolor='black')
+
+    ax1.set_facecolor("black")
+    ax2.set_facecolor("black")
+
+    ax1.bar(dates, worked_hours_per_day, color="green")
+    ax2.bar(dates, balance_per_day, color=['red' if val < 0 else 'green' for val in balance_per_day])
 
     axlabel_font={'family': 'Ubuntu Mono', 'weight': 'bold', 'size': 12}
 
-    ax.set_xlabel("Date", color="cyan", fontdict=axlabel_font)
-    plt.xticks(color='cyan')
+    ##
+    # Set labels
+
+    ax1.set_ylabel("Worked hours", color="cyan", fontdict=axlabel_font)
+    ax2.set_ylabel("Balance", color="cyan", fontdict=axlabel_font)
+
+    ax2.set_xlabel("Date", color="cyan", fontdict=axlabel_font)
     
-    ax.set_ylabel("Worked hours", color="cyan", fontdict=axlabel_font)
-    plt.yticks(color='cyan')
+    ##
+    # Set ticks color
 
-    ax.tick_params(axis='x', color='cyan')
-    ax.tick_params(axis='y', color='cyan')
+    ax1.tick_params(color='cyan', labelcolor='cyan')
+    ax2.tick_params(color='cyan', labelcolor='cyan')
 
-    ax.spines['bottom'].set_color('cyan')
-    ax.spines['left'].set_color('cyan')
+    ##
+    # Set axes (spines) colors
 
-    plt.setp( ax.xaxis.get_majorticklabels(), rotation=20, ha="right" )
+    ax1.spines['bottom'].set_color('cyan')
+    ax1.spines['left'].set_color('cyan')
+    
+    ax2.spines['bottom'].set_color('cyan')
+    ax2.spines['left'].set_color('cyan')
+
+    plt.setp( ax2.xaxis.get_majorticklabels(), rotation=30, ha="right" )
 
     plt.tight_layout()
     plt.show()
