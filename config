@@ -1,0 +1,4 @@
+[Settings]
+username = your_username
+password = your_password
+data_file_path = /home/george/git/TimeRegister/data.csv

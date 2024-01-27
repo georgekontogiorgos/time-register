@@ -1,13 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
-import timeregister as tr
+import timeregister
 from time import strftime
 import matplotlib.pyplot as plt
 
 def timestamp_decorator(func):
     def wrapper():
-        file_path = 'data.csv'
-        data = tr.get_data_from_file(file_path)
+        data = tr.get_data_from_file()
         try:
             date = tr.get_current_date()
             time = tr.get_current_time()
@@ -19,7 +18,7 @@ def timestamp_decorator(func):
             if confirmation == 'no':
                 return
             label.config(text=result_text)
-            tr.write_data_to_file(data, file_path)
+            tr.write_data_to_file(data)
         except:
             messagebox.showerror("Error", "Register two entries of same type in a row not possible")
     return wrapper
@@ -41,23 +40,29 @@ def clock_out_cmd(data, date, time):
         raise
 
 def balance_cmd():
-    data = tr.get_data_from_file('data.csv')
+    data = tr.get_data_from_file()
 
     #data = tr.date_range_filter(data, '2024-01-01', '2024-01-09')
 
     worked_hours = tr.get_worked_hours(data)
 
+    balance = tr.get_balance_per_day(worked_hours)
+
     categories = list(worked_hours.keys())
     values = list(worked_hours.values())
+
     plt.figure("Balance", facecolor='black')
+    
     ax = plt.axes()
     ax.set_facecolor("black")
     ax.bar(categories, values, color="green")
 
-    ax.set_xlabel("Date", color="cyan")
+    axlabel_font={'family': 'Ubuntu Mono', 'weight': 'bold', 'size': 12}
+
+    ax.set_xlabel("Date", color="cyan", fontdict=axlabel_font)
     plt.xticks(color='cyan')
     
-    ax.set_ylabel("Worked hours", color="cyan")
+    ax.set_ylabel("Worked hours", color="cyan", fontdict=axlabel_font)
     plt.yticks(color='cyan')
 
     ax.tick_params(axis='x', color='cyan')
@@ -93,7 +98,7 @@ label = tk.Label(window,
                  text="Welcome to time register program!",
                  background="black",
                  foreground='cyan',
-                 font=('consolas', 11, 'bold'))
+                 font=('Ubuntu Mono', 11, 'bold'))
 
 label.pack(pady=10)
 
@@ -123,6 +128,8 @@ showBalanceButton = tk.Button(window,
 showBalanceButton.place(x=50, y=100)
 
 clock()
+
+tr = timeregister.TimeRegister()
 
 # Run the main loop
 window.mainloop()
