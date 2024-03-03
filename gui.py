@@ -48,6 +48,9 @@ def balance_cmd():
 
     balance = tr.get_balance_per_day(worked_hours)
 
+    for date in worked_hours:
+        print(date,worked_hours[date])
+
     dates = list(worked_hours.keys())
     worked_hours_per_day = list(worked_hours.values())
     balance_per_day = list(balance.values())

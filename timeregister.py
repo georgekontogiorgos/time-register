@@ -1,7 +1,7 @@
 import pandas as pd
 from time import strftime, strptime, mktime, localtime
 import holidays
-from datetime import datetime
+from datetime import datetime, date
 import configparser
 
 timestamp_format = "%Y-%m-%d %H:%M:%S"
@@ -130,6 +130,17 @@ class TimeRegister:
         return True if holidays.country_holidays(self.country).get(date) else False
 
     def get_balance_per_day(self, worked_hours):
+
+        first_date = next(iter(worked_hours.items()))[0]
+        last_date = list(worked_hours.items())[-1][0]
+
+        start_date = date.fromisoformat(first_date)
+        end_date = date.fromisoformat(last_date)
+
+        current_date = start_date
+        date_dict = {}
+
+        print(first_date, last_date)
 
         balance_per_day = 0
         balance = {}
